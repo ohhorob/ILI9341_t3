@@ -297,6 +297,20 @@ void ILI9341_t3::setRotation(uint8_t m)
 	cursor_y = 0;
 }
 
+void ILI9341_t3::setScrollBoundaries(uint16_t topFixedAreaHeight, uint16_t bottomFixedAreaHeight) {
+	// TODO: compute width or height
+	uint16_t visibleScrollingAreaHeight = ILI9341_TFTHEIGHT - topFixedAreaHeight - bottomFixedAreaHeight;
+	SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+	writecommand_cont(ILI9341_VSCRDEF);
+	// TFA:
+	writedata16_cont(topFixedAreaHeight);
+	// VSA
+	writedata16_cont(visibleScrollingAreaHeight);
+	// BFA
+	writedata16_last(bottomFixedAreaHeight);
+	SPI.endTransaction();
+}
+
 void ILI9341_t3::setScroll(uint16_t offset)
 {
 	SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
