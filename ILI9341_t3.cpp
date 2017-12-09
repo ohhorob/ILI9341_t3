@@ -53,7 +53,7 @@
 
 // Teensy 3.1 can only generate 30 MHz SPI when running at 120 MHz (overclock)
 // At all other speeds, SPI.beginTransaction() will use the fastest available clock
-#define SPICLOCK 30000000
+#define SPICLOCK 100000000
 
 #define WIDTH  ILI9341_TFTWIDTH
 #define HEIGHT ILI9341_TFTHEIGHT
@@ -419,7 +419,7 @@ uint16_t ILI9341_t3::readPixel(int16_t x, int16_t y)
 	uint8_t dummy __attribute__((unused));
 	uint8_t r,g,b;
 
-	SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
 
 	setAddr(x, y, x, y);
 	writecommand_cont(ILI9341_RAMRD); // read from RAM
@@ -454,7 +454,7 @@ void ILI9341_t3::readRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *
 	uint8_t r,g,b;
 	uint16_t c = w * h;
 
-	SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
 
 	setAddr(x, y, x+w-1, y+h-1);
 	writecommand_cont(ILI9341_RAMRD); // read from RAM
