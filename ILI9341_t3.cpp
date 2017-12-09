@@ -480,10 +480,13 @@ void ILI9341_t3::readRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *
 		}
 
 		if ((KINETISK_SPI0.SR & 0xf0) >= 0x30) { // do we have at least 3 bytes in queue if so extract...
-			r = KINETISK_SPI0.POPR;		// Read a RED byte of GRAM
-			g = KINETISK_SPI0.POPR;		// Read a GREEN byte of GRAM
-			b = KINETISK_SPI0.POPR;		// Read a BLUE byte of GRAM
-			*pcolors++ = color565(r,g,b);
+
+            // ILI9341 Manual pp64; two low bits are empty of each byte
+			r = KINETISK_SPI0.POPR >> 2;		// Read a RED byte of GRAM
+			g = KINETISK_SPI0.POPR >> 2;		// Read a GREEN byte of GRAM
+			b = KINETISK_SPI0.POPR >> 2;		// Read a BLUE byte of GRAM
+//			*pcolors++ = color565(r,g,b);
+			*pcolors++ = b | (g << 5) | (r << 11);
 		}
 
 		// like waitFiroNotFull but does not pop our return queue
@@ -616,7 +619,7 @@ static const uint8_t init_commands[] = {
 	3, ILI9341_VMCTR1, 0x3e, 0x28, // VCM control
 	2, ILI9341_VMCTR2, 0x86, // VCM control2
 	2, ILI9341_MADCTL, 0x48, // Memory Access Control
-	2, ILI9341_PIXFMT, 0x55,
+	2, ILI9341_PIXFMT, 0x55, // Pixel Format Set: 0ppp 0bbb;  DPI=101; DBI=101 (16 bits per pixel)
 	3, ILI9341_FRMCTR1, 0x00, 0x18,
 	4, ILI9341_DFUNCTR, 0x08, 0x82, 0x27, // Display Function Control
 	2, 0xF2, 0x00, // Gamma Function Disable
